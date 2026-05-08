@@ -74,7 +74,7 @@ async function main() {
       category: 'Pricing',
       keywords: ['price', 'pricing', 'cost', 'plans', 'how much', 'subscription', 'payment', 'trial', 'free'],
       response:
-        'Pryro offers three plans: 1) Pryro Basic - FREE for solo use with light needs. 2) Pryro Premium - $29/month for professional use (Save 20%). 3) Pryro Enterprise - Flexible pricing for team use. All plans include core ERP features with varying levels of access and support. Free trial available - sign up at pryro.com.',
+        'Pryro offers three plans:\n\n1) Free ($0/mo per user) — Unlimited projects, 2 limited users, Time tracking, CRM, 100 limited invoices.\n\n2) Pro ($29/mo per user) — Everything in Free plus: Invoices & payments, Expense tracking, HR/CRM/POS, AI reports, Income tracking, Scheduling, Priority Support, Custom data import, Advanced onboarding, HubSpot integration, Timesheets.\n\n3) Enterprise (Flexible) — For teams, custom pricing.\n\nSign up free at pryro.com.',
       priority: 1,
       createdBy: admin.id,
     },
@@ -136,9 +136,9 @@ async function main() {
     },
     {
       category: 'Support & Contact',
-      keywords: ['support', 'help', 'contact', 'assistance', 'customer service', 'email', 'reach', 'get in touch'],
+      keywords: ['support', 'help', 'contact', 'assistance', 'customer service', 'email', 'reach', 'get in touch', 'phone', 'number', 'call', 'address', 'office', 'location'],
       response:
-        'Contact Pryro: Email: support@pryro.com | Website: https://pryro.com | For Sales inquiries: Visit pryro.com and sign up for a free trial | For CRM questions: Our CRM team handles lead management and customer success | For Technical support: Email support@pryro.com with your issue details | For Enterprise plans: Contact us for custom pricing and onboarding.',
+        'Contact Pryro directly:\n\n📧 Sales: sales@pryro.com\n📧 Support: support@pryro.com\n📞 Phone: +250 788 715 075\n🕐 Hours: 24/7 am - 0:00pm EST\n🏢 Office: 1 KN 78 Nyarugenge Street, Kigali, Rwanda\n🌐 Website: https://pryro.com\n\nFor sales inquiries, email sales@pryro.com. For technical support, email support@pryro.com or call +250 788 715 075.',
       priority: 1,
       createdBy: admin.id,
     },
