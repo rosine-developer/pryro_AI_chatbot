@@ -2,12 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "./src",
     "types": ["node", "jest"],
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": false
   },
-  "include": ["src/**/*", "api/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts", "prisma/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "api", "**/*.test.ts", "**/*.spec.ts", "prisma/**/*"]
 }
