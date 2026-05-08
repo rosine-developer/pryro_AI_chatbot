@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: chatbot-postgres
+    environment:
+      POSTGRES_USER: chatbot
+      POSTGRES_PASSWORD: chatbot
+      POSTGRES_DB: chatbot
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U chatbot']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: chatbot-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: chatbot-backend
+    environment:
+      DATABASE_URL: postgresql://chatbot:chatbot@postgres:5432/chatbot
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-key-change-in-production-min-32-chars
+      ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      PORT: 3000
+      NODE_ENV: development
+      ALLOWED_ORIGINS: http://localhost:5173
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./packages/backend:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: chatbot-frontend
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./packages/frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,146 @@
+// Prisma schema for AI Company Chatbot System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users table - stores both regular users and admins
+model User {
+  id               String    @id @default(uuid())
+  username         String    @unique
+  email            String    @unique
+  passwordHash     String    @map("password_hash")
+  role             Role      @default(USER)
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  lastActivityAt   DateTime? @map("last_activity_at")
+  
+  // Relations
+  sessions         Session[]
+  messages         Message[]
+  knowledgeEntries KnowledgeEntry[]
+  auditLogs        AuditLog[]
+  
+  @@index([role, isActive])
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// Sessions table - stores chat sessions
+model Session {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  startedAt       DateTime  @default(now()) @map("started_at")
+  lastMessageAt   DateTime  @default(now()) @map("last_message_at")
+  isActive        Boolean   @default(true) @map("is_active")
+  contextSummary  String?   @map("context_summary")
+  
+  // Relations
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages        Message[]
+  
+  @@index([userId, startedAt(sort: Desc)])
+  @@index([isActive, lastMessageAt])
+  @@map("sessions")
+}
+
+// Messages table - stores all chat messages
+model Message {
+  id                String    @id @default(uuid())
+  sessionId         String    @map("session_id")
+  userId            String    @map("user_id")
+  content           String
+  isUserMessage     Boolean   @map("is_user_message")
+  aiSource          AiSource? @map("ai_source")
+  confidenceScore   Float?    @map("confidence_score")
+  processingTimeMs  Int?      @map("processing_time_ms")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  session           Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([sessionId, createdAt])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("messages")
+}
+
+enum AiSource {
+  KEYWORD
+  AI_API
+  FALLBACK
+}
+
+// Knowledge base table - stores FAQ and knowledge entries
+model KnowledgeEntry {
+  id          String    @id @default(uuid())
+  category    String
+  keywords    String[]
+  response    String
+  priority    Int       @default(1)
+  createdBy   String?   @map("created_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  isActive    Boolean   @default(true) @map("is_active")
+  
+  // Relations
+  creator     User?     @relation(fields: [createdBy], references: [id])
+  
+  @@index([category])
+  @@index([keywords])
+  @@map("knowledge_entries")
+}
+
+// Audit logs table - tracks admin actions
+model AuditLog {
+  id            String    @id @default(uuid())
+  adminId       String    @map("admin_id")
+  actionType    String    @map("action_type")
+  resourceType  String    @map("resource_type")
+  resourceId    String?   @map("resource_id")
+  details       Json?
+  ipAddress     String?   @map("ip_address")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  admin         User      @relation(fields: [adminId], references: [id])
+  
+  @@index([adminId, createdAt(sort: Desc)])
+  @@index([resourceType, resourceId, createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
+
+// System metrics table - stores performance metrics
+model SystemMetric {
+  id           String    @id @default(uuid())
+  metricType   String    @map("metric_type")
+  metricValue  Float     @map("metric_value")
+  metadata     Json?
+  recordedAt   DateTime  @default(now()) @map("recorded_at")
+  
+  @@index([metricType, recordedAt(sort: Desc)])
+  @@map("system_metrics")
+}
+
+// Unanswered questions log - tracks questions the bot couldn't answer
+model UnansweredQuestion {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  sessionId       String    @map("session_id")
+  question        String
+  attemptedSource String    @map("attempted_source")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  resolved        Boolean   @default(false)
+  
+  @@index([resolved, createdAt(sort: Desc)])
+  @@map("unanswered_questions")
+}
