@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PryroLogo from '../components/common/PryroLogo';
+import API_BASE from '../config/api';
 
 interface Message {
   id: string;
@@ -35,7 +36,7 @@ export default function Chat() {
     const createSession = async () => {
       setSessionLoading(true);
       try {
-        const res = await fetch('http://localhost:3000/api/chat/guest/sessions', {
+        const res = await fetch(`${API_BASE}/api/chat/guest/sessions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
         });
@@ -62,7 +63,7 @@ export default function Chat() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3000/api/chat/guest/messages', {
+      const res = await fetch(`${API_BASE}/api/chat/guest/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, content: msg }),
