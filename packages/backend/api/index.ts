@@ -1,4 +1,3 @@
-// Vercel serverless entry point
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -6,14 +5,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-import { logger } from '../src/utils/logger';
+import { healthRouter } from '../src/routes/health';
+import { authRouter } from '../src/routes/auth.routes';
+import { chatRouter } from '../src/routes/chat.routes';
+import { adminRouter } from '../src/routes/admin.routes';
 
 const app = express();
 
-// Middleware
-app.use(helmet({
-  contentSecurityPolicy: false, // relaxed for API
-}));
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS === '*'
@@ -26,10 +25,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
-app.use('/health', require('../src/routes/health').healthRouter);
-app.use('/api/auth', require('../src/routes/auth.routes').authRouter);
-app.use('/api/chat', require('../src/routes/chat.routes').chatRouter);
-app.use('/api/admin', require('../src/routes/admin.routes').adminRouter);
+app.use('/health', healthRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/chat', chatRouter);
+app.use('/api/admin', adminRouter);
 
 // 404
 app.use((req: express.Request, res: express.Response) => {
@@ -37,8 +36,8 @@ app.use((req: express.Request, res: express.Response) => {
 });
 
 // Error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  logger.error('Unhandled error', { error: err.message });
+app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('Unhandled error', err.message);
   res.status(500).json({
     error: 'Internal Server Error',
     message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred',
