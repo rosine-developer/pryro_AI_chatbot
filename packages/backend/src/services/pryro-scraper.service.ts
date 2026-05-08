@@ -82,21 +82,28 @@ export async function fetchPryroLiveContent(): Promise<string> {
 }
 
 /**
- * Fetch only the most relevant page based on the user's question
+ * Fetch only the most relevant page based on the user's question.
+ * Always includes contact page so address/phone are never missing.
  */
 export async function fetchRelevantPryroPage(question: string): Promise<string> {
   const q = question.toLowerCase();
 
-  let url = 'https://pryro.com'; // default
+  // Always fetch contact page — short follow-ups like "where exactly?" need it
+  const pagesToFetch = new Set<string>(['https://pryro.com/contact']);
 
-  if (q.includes('price') || q.includes('cost') || q.includes('plan') || q.includes('free') || q.includes('paid')) {
-    url = 'https://pryro.com/pricing';
-  } else if (q.includes('contact') || q.includes('phone') || q.includes('email') || q.includes('reach') || q.includes('address') || q.includes('number') || q.includes('call')) {
-    url = 'https://pryro.com/contact';
-  } else if (q.includes('about') || q.includes('founder') || q.includes('team') || q.includes('history') || q.includes('who')) {
-    url = 'https://pryro.com/about';
+  if (q.includes('price') || q.includes('cost') || q.includes('plan') || q.includes('free') || q.includes('paid') || q.includes('subscription')) {
+    pagesToFetch.add('https://pryro.com/pricing');
+  } else if (q.includes('about') || q.includes('founder') || q.includes('team') || q.includes('history') || q.includes('who started') || q.includes('who made')) {
+    pagesToFetch.add('https://pryro.com/about');
+  } else {
+    pagesToFetch.add('https://pryro.com');
   }
 
-  const text = await scrapePage(url);
-  return text ? `Live data from ${url}:\n${text}` : '';
+  const results = await Promise.allSettled([...pagesToFetch].map(scrapePage));
+  const combined = results
+    .map((r) => (r.status === 'fulfilled' ? r.value : ''))
+    .filter(Boolean)
+    .join('\n\n');
+
+  return combined;
 }
