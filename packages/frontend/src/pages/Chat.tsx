@@ -89,11 +89,11 @@ export default function Chat() {
   const hasMessages = messages.length > 0;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-white">
 
       {/* ── Header ── */}
-      <header className="bg-white border-b border-gray-200 shadow-sm flex-shrink-0">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-3">
+      <header className="bg-white flex-shrink-0">
+        <div className="px-6 py-3 flex items-center gap-3">
           <PryroLogo size="md" />
           <div>
             <h1 className="text-lg font-bold text-gray-900 leading-tight">Welcome to Pryro AI Chatbot</h1>
@@ -109,8 +109,8 @@ export default function Chat() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── Left sidebar: suggestions (always visible) ── */}
-        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 p-5 flex flex-col gap-2 overflow-y-auto">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Try Asking</p>
+        <aside className="w-64 flex-shrink-0 bg-white p-5 flex flex-col gap-2 overflow-y-auto">
+          <p className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Try Asking</p>
           {SUGGESTIONS.map((s) => (
             <button
               key={s}
