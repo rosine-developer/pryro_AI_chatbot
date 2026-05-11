@@ -259,11 +259,11 @@ export default function Chat() {
 
           {/* Footer */}
           <div className="flex-shrink-0 py-3 px-8 flex items-center justify-between border-t border-gray-100">
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-900">
               Powered by <span className="font-semibold text-blue-600">Pryro AI</span> · Visit{' '}
               <a href="https://pryro.com" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">pryro.com</a>
             </p>
-            <div className="flex items-center gap-3 text-xs text-gray-400">
+            <div className="flex items-center gap-3 text-xs text-gray-900">
               <span>All rights reserved.</span>
               <a href="https://pryro.com/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 hover:underline">Privacy Policy</a>
               <a href="https://pryro.com/terms" target="_blank" rel="noopener noreferrer" className="hover:text-blue-500 hover:underline">Terms of Service</a>
